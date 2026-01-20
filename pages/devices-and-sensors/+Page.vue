@@ -51,9 +51,9 @@
               </td>
               <td class="mono">{{ formatTime(d.timestamp) }}</td>
               <td class="mono">
-                {{ d.data.accel_x.toFixed(2) }}, {{ d.data.accel_y.toFixed(2) }}, {{ d.data.accel_z.toFixed(2) }}
+                {{ formatNumber(d?.data?.accel_x, 2) }}, {{ formatNumber(d?.data?.accel_y, 2) }}, {{ formatNumber(d?.data?.accel_z, 2) }}
               </td>
-              <td class="mono">{{ d.data.tilt_angle.toFixed(2) }}°</td>
+              <td class="mono">{{ formatNumber(getTiltAngle(d), 2) }}°</td>
             </tr>
           </tbody>
         </table>
@@ -129,7 +129,8 @@ async function refresh() {
   errorMsg.value = "";
   demoMode.value = false;
   try {
-    devices.value = await getLatestDevices();
+    const res = await getLatestDevices();
+    devices.value = Array.isArray(res) ? res : [];
   } catch {
     errorMsg.value = "Không tải được danh sách thiết bị. Kiểm tra đăng nhập và backend.";
     setDemo();
@@ -146,6 +147,20 @@ const filtered = computed(() => {
 onMounted(() => {
   refresh();
 });
+
+function asNumber(value: unknown) {
+  const n = typeof value === "string" ? Number.parseFloat(value) : value;
+  return typeof n === "number" && Number.isFinite(n) ? n : Number.NaN;
+}
+
+function formatNumber(value: unknown, decimals = 2) {
+  const n = asNumber(value);
+  return Number.isFinite(n) ? n.toFixed(decimals) : "NaN";
+}
+
+function getTiltAngle(d: SensorData) {
+  return asNumber(d?.data?.tilt_angle);
+}
 </script>
 
 <style scoped>

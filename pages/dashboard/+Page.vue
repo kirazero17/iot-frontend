@@ -120,19 +120,19 @@
           <div class="device-data">
             <div class="data-row">
               <span>Gia tốc X:</span>
-              <strong>{{ device.data.accel_x.toFixed(2) }} m/s²</strong>
+              <strong>{{ formatNumber(device?.data?.accel_x, 2) }} m/s²</strong>
             </div>
             <div class="data-row">
               <span>Gia tốc Y:</span>
-              <strong>{{ device.data.accel_y.toFixed(2) }} m/s²</strong>
+              <strong>{{ formatNumber(device?.data?.accel_y, 2) }} m/s²</strong>
             </div>
             <div class="data-row">
               <span>Gia tốc Z:</span>
-              <strong>{{ device.data.accel_z.toFixed(2) }} m/s²</strong>
+              <strong>{{ formatNumber(device?.data?.accel_z, 2) }} m/s²</strong>
             </div>
             <div class="data-row">
               <span>Góc nghiêng:</span>
-              <strong>{{ device.data.tilt_angle.toFixed(2) }}°</strong>
+              <strong>{{ formatNumber(getTiltAngle(device), 2) }}°</strong>
             </div>
             <div class="data-row">
               <span>Cập nhật:</span>
@@ -167,12 +167,12 @@
               <span class="alert-time">{{ formatTime(alert.timestamp) }}</span>
             </div>
             <p class="alert-details">
-              Gia tốc: X={{ alert.data.accel_x.toFixed(2) }},
-              Y={{ alert.data.accel_y.toFixed(2) }},
-              Z={{ alert.data.accel_z.toFixed(2) }} m/s²
+              Gia tốc: X={{ formatNumber(alert?.data?.accel_x, 2) }},
+              Y={{ formatNumber(alert?.data?.accel_y, 2) }},
+              Z={{ formatNumber(alert?.data?.accel_z, 2) }} m/s²
             </p>
             <p v-if="alert.location" class="alert-location">
-              Vị trí: {{ alert.location.lat.toFixed(4) }}, {{ alert.location.lon.toFixed(4) }}
+              Vị trí: {{ formatNumber(alert.location?.lat, 4) }}, {{ formatNumber(alert.location?.lon, 4) }}
             </p>
           </div>
         </div>
@@ -243,7 +243,7 @@ const accelerationData = computed(() => {
     datasets: [
       {
         label: "Gia tốc X",
-        data: latestDevices.value.map((d) => d.data.accel_x),
+        data: latestDevices.value.map((d) => asNumber(d?.data?.accel_x)),
         borderColor: "rgb(255, 99, 132)",
         backgroundColor: "rgba(255, 99, 132, 0.2)",
         tension: 0.4,
@@ -251,7 +251,7 @@ const accelerationData = computed(() => {
       },
       {
         label: "Gia tốc Y",
-        data: latestDevices.value.map((d) => d.data.accel_y),
+        data: latestDevices.value.map((d) => asNumber(d?.data?.accel_y)),
         borderColor: "rgb(54, 162, 235)",
         backgroundColor: "rgba(54, 162, 235, 0.2)",
         tension: 0.4,
@@ -259,7 +259,7 @@ const accelerationData = computed(() => {
       },
       {
         label: "Gia tốc Z",
-        data: latestDevices.value.map((d) => d.data.accel_z),
+        data: latestDevices.value.map((d) => asNumber(d?.data?.accel_z)),
         borderColor: "rgb(75, 192, 192)",
         backgroundColor: "rgba(75, 192, 192, 0.2)",
         tension: 0.4,
@@ -276,7 +276,7 @@ const gyroscopeData = computed(() => {
     datasets: [
       {
         label: "Góc X",
-        data: latestDevices.value.map((d) => d.data.gyro_x),
+        data: latestDevices.value.map((d) => asNumber(d?.data?.gyro_x)),
         borderColor: "rgb(255, 159, 64)",
         backgroundColor: "rgba(255, 159, 64, 0.2)",
         tension: 0.4,
@@ -284,7 +284,7 @@ const gyroscopeData = computed(() => {
       },
       {
         label: "Góc Y",
-        data: latestDevices.value.map((d) => d.data.gyro_y),
+        data: latestDevices.value.map((d) => asNumber(d?.data?.gyro_y)),
         borderColor: "rgb(153, 102, 255)",
         backgroundColor: "rgba(153, 102, 255, 0.2)",
         tension: 0.4,
@@ -292,7 +292,7 @@ const gyroscopeData = computed(() => {
       },
       {
         label: "Góc Z",
-        data: latestDevices.value.map((d) => d.data.gyro_z),
+        data: latestDevices.value.map((d) => asNumber(d?.data?.gyro_z)),
         borderColor: "rgb(201, 203, 207)",
         backgroundColor: "rgba(201, 203, 207, 0.2)",
         tension: 0.4,
@@ -309,7 +309,7 @@ const magnetometerData = computed(() => {
     datasets: [
       {
         label: "Từ trường X",
-        data: latestDevices.value.map((d) => d.data.mag_x),
+        data: latestDevices.value.map((d) => asNumber(d?.data?.mag_x)),
         borderColor: "rgb(255, 99, 132)",
         backgroundColor: "rgba(255, 99, 132, 0.2)",
         tension: 0.4,
@@ -317,7 +317,7 @@ const magnetometerData = computed(() => {
       },
       {
         label: "Từ trường Y",
-        data: latestDevices.value.map((d) => d.data.mag_y),
+        data: latestDevices.value.map((d) => asNumber(d?.data?.mag_y)),
         borderColor: "rgb(54, 162, 235)",
         backgroundColor: "rgba(54, 162, 235, 0.2)",
         tension: 0.4,
@@ -325,7 +325,7 @@ const magnetometerData = computed(() => {
       },
       {
         label: "Từ trường Z",
-        data: latestDevices.value.map((d) => d.data.mag_z),
+        data: latestDevices.value.map((d) => asNumber(d?.data?.mag_z)),
         borderColor: "rgb(75, 192, 192)",
         backgroundColor: "rgba(75, 192, 192, 0.2)",
         tension: 0.4,
@@ -351,6 +351,20 @@ function getSeverityLabel(severity: string): string {
     critical: "Nghiêm Trọng",
   };
   return labels[severity] || severity;
+}
+
+function asNumber(value: unknown) {
+  const n = typeof value === "string" ? Number.parseFloat(value) : value;
+  return typeof n === "number" && Number.isFinite(n) ? n : Number.NaN;
+}
+
+function formatNumber(value: unknown, decimals = 2) {
+  const n = asNumber(value);
+  return Number.isFinite(n) ? n.toFixed(decimals) : "NaN";
+}
+
+function getTiltAngle(d: SensorData) {
+  return asNumber(d?.data?.tilt_angle);
 }
 
 function setDemoData() {
@@ -430,8 +444,8 @@ async function refreshData() {
   try {
     const [newStats, newDevices, newAlerts] = await Promise.all([getStatistics(), getLatestDevices(), getAlerts(10)]);
     statistics.value = newStats;
-    latestDevices.value = newDevices;
-    alerts.value = newAlerts;
+    latestDevices.value = Array.isArray(newDevices) ? newDevices : [];
+    alerts.value = Array.isArray(newAlerts) ? newAlerts : [];
     updateKey.value += 1;
   } catch {
     errorMsg.value = "Không tải được dữ liệu dashboard. Kiểm tra đăng nhập và backend.";

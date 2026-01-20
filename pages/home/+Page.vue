@@ -78,7 +78,7 @@
             </div>
             <div class="preview-metric">
               <span>Góc nghiêng:</span>
-              <strong>{{ device.data.tilt_angle.toFixed(2) }}°</strong>
+              <strong>{{ getTiltAngle(device).toFixed(2) }}°</strong>
             </div>
             <div class="preview-time">
               {{ formatTime(device.timestamp) }}
@@ -136,8 +136,23 @@ function getSeverityLabel(severity: string): string {
   return labels[severity] || severity;
 }
 
+function safeNumber(value: unknown) {
+  const n = typeof value === "string" ? Number.parseFloat(value) : value;
+  return typeof n === "number" && Number.isFinite(n) ? n : 0;
+}
+
 function calcAccel(d: SensorData) {
-  return Math.sqrt(d.data.accel_x ** 2 + d.data.accel_y ** 2 + d.data.accel_z ** 2);
+  const reading = d?.data;
+  const x = safeNumber(reading?.accel_x);
+  const y = safeNumber(reading?.accel_y);
+  const z = safeNumber(reading?.accel_z);
+  return Math.sqrt(x ** 2 + y ** 2 + z ** 2);
+}
+
+function getTiltAngle(d: SensorData) {
+  const raw = d?.data?.tilt_angle;
+  const n = typeof raw === "string" ? Number.parseFloat(raw) : raw;
+  return typeof n === "number" && Number.isFinite(n) ? n : Number.NaN;
 }
 
 function setDemoData() {
@@ -215,7 +230,7 @@ async function refresh() {
   try {
     const [stats, devices] = await Promise.all([getStatistics(), getLatestDevices()]);
     statistics.value = stats;
-    latestDevices.value = devices;
+    latestDevices.value = Array.isArray(devices) ? devices : [];
   } catch (e: any) {
     errorMsg.value = "Không tải được dữ liệu. Kiểm tra đăng nhập và backend.";
     setDemoData();
