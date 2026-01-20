@@ -130,7 +130,7 @@ function handleLogout() {
 async function checkHealth() {
   healthLoading.value = true;
   try {
-    const res = await api.get("/api/health");
+    const res = await api.get("/health");
     health.value = res.data;
   } catch {
     health.value = { status: "error", mongodb: "disconnected" };
